@@ -1,34 +1,43 @@
 #!/bin/sh
 #
-# autosshd	autossh system service
+# autosshd      autossh system service
+#
+# chkconfig: 2345 30 60
+#
+# description: autosshd run autossh as system service
+#
+# processname: autossh
 #
 
 WITHOUT_RC_COMPAT=1
 
 # Source function library.
-. /etc/rc.d/init.d/functions
-
-LOCKFILE=/var/lock/subsys/autosshd
-PIDFILE=/var/run/autosshd.pid
-RETVAL=0
+. /etc/init.d/functions
 
 SourceIfExists /etc/sysconfig/autosshd
+
+LOCKFILE=/var/lock/subsys/autosshd
+PIDFILE=/var/run/autosshd/autossh.pid
+RETVAL=0
+
 
 
 
 start()
 {
-	start_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE" --expect-user _autosshd --name autosshd -- autossh ${OPTIONS}
-	RETVAL=$?
-	return $RETVAL
-
+        start_daemon --pidfile "$PIDFILE" --make-pidfile --lockfile "$LOCKFILE" --user _autossh --name autossh -- autossh ${AUTOSSH_OPTIONS}
+        RETVAL=$?
+        sleep 2
+        ps ax | grep autossh: | grep -v grep | awk {'print $1'} > "$PIDFILE"
+        return $RETVAL
 }
 
 stop()
 {
-	stop_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE" --expect-user _autossh --name autossh -- autossh
-	RETVAL=$?
-	return $RETVAL
+        stop_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE" --expect-user _autossh --name autossh -- autossh
+        RETVAL=$?
+        rm -f "$PIDFILE"
+        return $RETVAL
 }
 
 restart()
@@ -38,33 +47,29 @@ restart()
     start
 }
 
-status()
-{
-    return 0
-}
-
 case "$1" in
     start)
-	start
+        start
     ;;
     stop)
-	stop
+        stop
     ;;
     restart|reload)
-	restart
+        restart
     ;;
     condstop)
     if [ -e "$LOCKFILE" ]; then
-	stop
+        stop
     fi
     ;;
     condrestart|condreload)
     if [ -e "$LOCKFILE" ]; then
-	restart
+        restart
     fi
     ;;
     status)
-	status
+        status --pidfile "$PIDFILE" --name autossh -- autossh
+        RETVAL=$?
     ;;
     *)
     msg_usage "${0##*/} {start|stop|reload|restart|condstop|condrestart|condreload|status}"
