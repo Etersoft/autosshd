@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# autosshd	autossh system service
+#
+
+WITHOUT_RC_COMPAT=1
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+LOCKFILE=/var/lock/subsys/autosshd
+PIDFILE=/var/run/autosshd.pid
+RETVAL=0
+
+SourceIfExists /etc/sysconfig/autosshd
+
+
+
+start()
+{
+	start_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE" --expect-user _autosshd --name autosshd -- autossh ${OPTIONS}
+	RETVAL=$?
+	return $RETVAL
+
+}
+
+stop()
+{
+	stop_daemon --pidfile "$PIDFILE" --lockfile "$LOCKFILE" --expect-user _autossh --name autossh -- autossh
+	RETVAL=$?
+	return $RETVAL
+}
+
+restart()
+{
+    stop
+    sleep 2
+    start
+}
+
+status()
+{
+    return 0
+}
+
+case "$1" in
+    start)
+	start
+    ;;
+    stop)
+	stop
+    ;;
+    restart|reload)
+	restart
+    ;;
+    condstop)
+    if [ -e "$LOCKFILE" ]; then
+	stop
+    fi
+    ;;
+    condrestart|condreload)
+    if [ -e "$LOCKFILE" ]; then
+	restart
+    fi
+    ;;
+    status)
+	status
+    ;;
+    *)
+    msg_usage "${0##*/} {start|stop|reload|restart|condstop|condrestart|condreload|status}"
+    RETVAL=1
+    ;;
+esac
+
+exit $RETVAL
