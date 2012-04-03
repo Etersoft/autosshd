@@ -31,10 +31,10 @@ Run autossh as system service at startup
 %install
 mkdir -p %buildroot%_initdir
 mkdir -p %buildroot%_sysconfdir/sysconfig
-mkdir -p %buildroot/var/run/%name
+mkdir -p %buildroot/var/run/autosshd
 mkdir -p %buildroot/var/lib/autosshd/.ssh
-mkdir -p %buildroot%_docdir/%name
-install -D -m644 doc/README %buildroot%_docdir/%name/
+mkdir -p %buildroot%_docdir/autosshd
+install -D -m644 doc/README %buildroot%_docdir/autosshd/README
 install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/autosshd
 install -D -m644 etc/sysconfig/autosshd %buildroot%_sysconfdir/sysconfig/autosshd
 
@@ -62,10 +62,10 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %_initdir/*
 %config(noreplace) %_sysconfdir/sysconfig/autosshd
 %dir /var/lib/autosshd
-%dir /var/run/%name
-%dir %_docdir/%name
-%_docdir/%name/*
-%attr(0644,root,root) %_docdir/%name/README
+%dir /var/run/autosshd
+%dir %_docdir/autosshd
+%_docdir/autosshd/*
+%attr(0644,root,root) %_docdir/autosshd/README
 
 %changelog
 * Tue Apr 03 2012 Dmitriy Kruglikov <dkr@altlinux.org> 0.0.1-alt2
