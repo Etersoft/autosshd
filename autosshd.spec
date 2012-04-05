@@ -39,21 +39,22 @@ install -D -m644 etc/sysconfig/autosshd %buildroot%_sysconfdir/sysconfig/autossh
 
 
 %pre
-if ! [ -f /var/lib/autosshd/.ssh/id_dsa ]; then
 # Add the "_autossh" user
 %_sbindir/groupadd -r -f %autossh_group 2>/dev/null ||:
 %_sbindir/useradd  -r -g %autossh_group -c 'Autossh daemon' \
 	-s /dev/null -d /var/lib/autosshd %autossh_user 2>/dev/null ||:
 %_sbindir/usermod -p `pwgen -s 24 1` %autossh_user
-mkdir -p /var/lib/autosshd/.ssh
-/usr/bin/ssh-keygen -t dsa -b 1024 -C "AutoSSH daemon" -N "" -q -f /var/lib/autosshd/.ssh/id_dsa
-echo "StrictHostKeyChecking no" > /var/lib/autosshd/.ssh/config
-cp /var/lib/autosshd/.ssh/id_dsa.pub /var/lib/autosshd/.ssh/authorized_keys
-chown -R %autossh_user:%autossh_group /var/lib/autosshd/
-chown %autossh_user:%autossh_group /var/run/autosshd/
-fi
 
 %post
+if ! [ -f /var/lib/autosshd/.ssh/id_dsa ]; then
+    mkdir -p /var/lib/autosshd/.ssh
+    /usr/bin/ssh-keygen -t dsa -b 1024 -C "AutoSSH daemon" -N "" -q -f /var/lib/autosshd/.ssh/id_dsa
+    echo "StrictHostKeyChecking no" > /var/lib/autosshd/.ssh/config
+    cp /var/lib/autosshd/.ssh/id_dsa.pub /var/lib/autosshd/.ssh/authorized_keys
+fi
+chown -R %autossh_user:%autossh_group /var/lib/autosshd/
+chown %autossh_user:%autossh_group /var/run/autosshd/
+
 %post_service %name
 
 %preun
