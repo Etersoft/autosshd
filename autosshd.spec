@@ -4,7 +4,7 @@
 
 Name: autosshd
 Version: 0.0.1
-Release: alt3
+Release: alt4
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
@@ -60,6 +60,10 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %preun
 %preun_service %name
 
+%postun
+%_sbindir/userdel -r %autossh_user 2>/dev/null ||:
+%_sbindir/groupdel -r %autossh_group 2>/dev/null ||:
+
 %files
 %_initdir/*
 %config(noreplace) %_sysconfdir/sysconfig/autosshd
@@ -70,6 +74,9 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %attr(0644,root,root) %_docdir/autosshd/README
 
 %changelog
+* Thu Apr 05 2012 Dmitriy Kruglikov <dkr@altlinux.org> 0.0.1-alt4
+- Fixed bugs in postinstall and postuninstal scripts
+
 * Tue Apr 03 2012 Dmitriy Kruglikov <dkr@altlinux.org> 0.0.1-alt3
 - Fixes
 
