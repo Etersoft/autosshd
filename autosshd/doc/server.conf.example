@@ -1,0 +1,53 @@
+#usage: autossh [-V] [-M monitor_port[:echo_port]] [-f] [SSH_OPTIONS]
+#
+#    -M specifies monitor port. May be overridden by environment
+#       variable AUTOSSH_PORT. 0 turns monitoring loop off.
+#       Alternatively, a port for an echo service on the remote
+#       machine may be specified. (Normally port 7.)
+#    -f run in background (autossh handles this, and does not  pass it to ssh.)
+#    -V print autossh version and exit.
+#
+#Environment variables are:
+#    AUTOSSH_LOGLEVEL    - level of log verbosity
+AUTOSSH_LOGLEVEL=4
+
+#    AUTOSSH_MESSAGE     - message to append to echo string (max 64 bytes)
+#    AUTOSSH_PIDFILE     - write pid to this file
+#    AUTOSSH_FIRST_POLL  - time before first connection check (seconds)
+#
+
+#    AUTOSSH_POLL        - how often to check the connection (seconds)
+#AUTOSSH_POLL=600
+#    AUTOSSH_PORT        - port to use for monitor connection
+#AUTOSSH_PORT=20000
+#    AUTOSSH_GATETIME    - how long must an ssh session be established
+#                          before we decide it really was established
+#                          (in seconds). Default is 30 seconds; use of -f
+#                          flag sets this to 0.
+#AUTOSSH_GATETIME=30
+#    AUTOSSH_LOGFILE     - file to log to (default is to use the syslog facility)
+#AUTOSSH_LOGFILE=$HOST.log
+
+#    AUTOSSH_DEBUG       - turn logging to maximum verbosity and log to stderr
+AUTOSSH_DEBUG=yes 
+
+#    AUTOSSH_PATH        - path to ssh if not default
+#AUTOSSH_PATH=/usr/local/bin/ssh
+
+#    AUTOSSH_MAXSTART    - max times to restart (default is no limit)
+AUTOSSH_MAXSTART=100
+
+#    AUTOSSH_MAXLIFETIME - set the maximum time to live (seconds)
+
+AUTOSSH_PIDFILE=/var/run/autosshd/autossh.pid
+AUTOSSH_LOGFILE=/var/lib/autosshd/autosshd.log
+
+HOST=127.0.0.1
+#HOST=10.9.8.3
+USER=_autossh
+REMOTESSH_USER=_autossh
+LOCAL_PORT=22
+REMOTE_PORT=2200
+MON_INTERVAL=20000
+
+AUTOSSH_OPTIONS=" -M ${MON_INTERVAL} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} -f ${REMOTESSH_USER}@${HOST}"

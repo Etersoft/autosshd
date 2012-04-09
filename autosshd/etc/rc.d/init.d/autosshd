@@ -14,8 +14,10 @@ WITHOUT_RC_COMPAT=1
 # Source function library.
 . /etc/init.d/functions
 
-SourceIfExists /etc/sysconfig/autosshd
 
+
+SYSCONFIGFILE=/etc/sysconfig/autosshd
+SourceIfExists ${SYSCONFIGFILE}
 LOCKFILE=/var/lock/subsys/autosshd
 PIDFILE=/var/run/autosshd/autossh.pid
 RETVAL=0
