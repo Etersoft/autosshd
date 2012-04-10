@@ -1,4 +1,3 @@
-MANUAL=no
 #usage: autossh [-V] [-M monitor_port[:echo_port]] [-f] [SSH_OPTIONS]
 #
 #    -M specifies monitor port. May be overridden by environment
@@ -40,16 +39,19 @@ AUTOSSH_MAXSTART=100
 
 #    AUTOSSH_MAXLIFETIME - set the maximum time to live (seconds)
 
-AUTOSSH_PIDFILE=/var/run/autossh.d/server2.pid
-AUTOSSH_LOCKFILE=server2.lck
+AUTOSSH_PIDFILE=/var/run/autossh.d/server1.pid
+AUTOSSH_LOCKFILE=server1.lck
 AUTOSSH_LOGFILE=/var/lib/autosshd/autosshd.log
 
 HOST=127.0.0.1
-#HOST=10.9.8.3
 USER=_autossh
 REMOTESSH_USER=_autossh
 LOCAL_PORT=22
-REMOTE_PORT=2200
-MON_INTERVAL=20000
+REMOTE_PORT=2100
 
-AUTOSSH_OPTIONS=" -M ${MON_INTERVAL} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} -f ${REMOTESSH_USER}@${HOST}"
+#AUTOSSH_PORT parameter must be unique for each connection and can not be 0
+AUTOSSH_PORT=21000
+
+MANUAL=no
+
+AUTOSSH_OPTIONS=" -M ${AUTOSSH_PORT} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} -f ${REMOTESSH_USER}@${HOST}"

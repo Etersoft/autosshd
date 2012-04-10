@@ -3,8 +3,8 @@
 %define autossh_group     _autossh
 
 Name: autosshd
-Version: 0.0.1
-Release: alt4
+Version: 0.0.2
+Release: alt1
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
@@ -30,12 +30,13 @@ Run autossh as system service at startup
 %install
 mkdir -p %buildroot%_initdir
 mkdir -p %buildroot%_sysconfdir/autossh.d
-mkdir -p %buildroot/var/run/autosshd
+mkdir -p %buildroot/var/run/autossh.d
+mkdir -p %buildroot/var/lock/subsys/autossh.d
 mkdir -p %buildroot/var/lib/autosshd/.ssh
 mkdir -p %buildroot%_docdir/autosshd
-install -D -m644 doc/README %buildroot%_docdir/autosshd/README
-install -D -m644 doc/server.conf.example %buildroot%_docdir/autosshd/server.conf.example
+install -p -m644 doc/* %buildroot%_docdir/autosshd/
 install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/autosshd
+install -D -m640 etc/sysconfig/autosshd %buildroot/etc/sysconfig/autosshd
 
 
 %pre
@@ -46,14 +47,14 @@ install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/autosshd
 %_sbindir/usermod -p `pwgen -s 24 1` %autossh_user
 
 %post
-if ! [ -f /var/lib/autosshd/.ssh/id_dsa ]; then
+if [ ! -f /var/lib/autosshd/.ssh/id_dsa ]; then
     mkdir -p /var/lib/autosshd/.ssh
     /usr/bin/ssh-keygen -t dsa -b 1024 -C "AutoSSH daemon" -N "" -q -f /var/lib/autosshd/.ssh/id_dsa
     echo "StrictHostKeyChecking no" > /var/lib/autosshd/.ssh/config
     cp /var/lib/autosshd/.ssh/id_dsa.pub /var/lib/autosshd/.ssh/authorized_keys
 fi
 chown -R %autossh_user:%autossh_group /var/lib/autosshd/
-chown %autossh_user:%autossh_group /var/run/autosshd/
+chown %autossh_user:%autossh_group /var/run/autossh.d/
 
 %post_service %name
 
@@ -66,16 +67,16 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 
 %files
 %_initdir/*
+%_sysconfdir/*
 %dir /var/lib/autosshd
-%dir /var/run/autosshd
-%dir %_docdir/autosshd
-%_docdir/autosshd/*
+%dir /var/run/autossh.d
+%dir /var/lock/subsys/autossh.d
 %attr(0644,root,root) %_docdir/autosshd/*
 
 
 %changelog
 * Mon Apr 09 2012 Dmitriy Kruglikov <dkr@altlinux.org> 0.0.2-alt1
-- 
+- Code rewritten to work with multiple connections
 
 * Thu Apr 05 2012 Dmitriy Kruglikov <dkr@altlinux.org> 0.0.1-alt4
 - Fixed bugs in postinstall and postuninstal scripts

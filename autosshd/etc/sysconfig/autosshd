@@ -1,4 +1,13 @@
+#N.B! Pre-configured directories is managed by RPM.
+
+# Directory for configured connections.
+# See /usr/share/doc/autossh-* for more.
+# We use only the files with the extension .conf
 CONFIGDIR=/etc/autossh.d
+
+# Directory for store connection's PID-files
 PIDFILEDIR=/var/run/autossh.d
+
+# Directory for store connection's lock-files
 LOCKFILEDIR=/var/lock/subsys/autossh.d
 
