@@ -4,15 +4,13 @@
 
 Name: autosshd
 Version: 0.0.2
-Release: alt1
+Release: alt2
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
 License: GPL
 Url: http://etersoft.ru
 Source: %name.tar
-
-Packager: Dmitriy Kruglikov <dkr@altlinux.ru>
 
 BuildArch: noarch
 
@@ -23,21 +21,19 @@ Requires: autossh
 %description
 Run autossh as system service at startup
 
-
 %prep
 %setup -n autosshd
 
 %install
-mkdir -p %buildroot%_initdir
-mkdir -p %buildroot%_sysconfdir/autossh.d
-mkdir -p %buildroot/var/run/autossh.d
-mkdir -p %buildroot/var/lock/subsys/autossh.d
-mkdir -p %buildroot/var/lib/autosshd/.ssh
-mkdir -p %buildroot%_docdir/autosshd
-install -p -m644 doc/* %buildroot%_docdir/autosshd/
-install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/autosshd
-install -D -m640 etc/sysconfig/autosshd %buildroot/etc/sysconfig/autosshd
+mkdir -p %buildroot%_initdir/
+mkdir -p %buildroot%_sysconfigdir/
+mkdir -p %buildroot/var/run/%name/
+mkdir -p %buildroot/var/lock/subsys/%name/
+mkdir -p %buildroot/var/lib/%name/.ssh
+mkdir -p %buildroot%_docdir/%name/
 
+install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/%name
+install -D -m640 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
 
 %pre
 # Add the "_autossh" user
@@ -66,15 +62,17 @@ chown %autossh_user:%autossh_group /var/run/autossh.d/
 %_sbindir/groupdel -r %autossh_group 2>/dev/null ||:
 
 %files
-%_initdir/*
-%_sysconfdir/*
-%dir /var/lib/autosshd
-%dir /var/run/autossh.d
-%dir /var/lock/subsys/autossh.d
-%attr(0644,root,root) %_docdir/autosshd/*
-
+%doc doc/*
+%_initdir/%name
+%config(noreplace) %_sysconfigdir/%name
+%dir /var/lib/%name/
+%dir /var/run/%name/
+%dir /var/lock/subsys/%name/
 
 %changelog
+* Tue Oct 08 2013 Vitaly Lipatov <lav@altlinux.ru> 0.0.2-alt2
+- cleanup spec
+
 * Mon Apr 09 2012 Dmitriy Kruglikov <dkr@altlinux.org> 0.0.2-alt1
 - Code rewritten to work with multiple connections
 
