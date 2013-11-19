@@ -4,22 +4,25 @@
 
 Name: autosshd
 Version: 0.0.2
-Release: alt2
+Release: alt3
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
 License: GPL
-Url: http://etersoft.ru
+Url: http://wiki.etersoft.ru/Autosshd
+# http://git.etersoft.ru/people/lav/packages/autosshd.git
 Source: %name.tar
 
 BuildArch: noarch
 
 PreReq: pwgen shadow-utils openssh-common
 
+BuildPreReq: rpm-build-intro
+
 Requires: autossh
 
 %description
-Run autossh as system service at startup
+Run autossh as system service at startup.
 
 %prep
 %setup -n autosshd
@@ -70,6 +73,9 @@ chown %autossh_user:%autossh_group /var/run/autossh.d/
 %dir /var/lock/subsys/%name/
 
 %changelog
+* Tue Nov 19 2013 Vitaly Lipatov <lav@altlinux.ru> 0.0.2-alt3
+- initial build to ALT Linux Sisyphus
+
 * Tue Oct 08 2013 Vitaly Lipatov <lav@altlinux.ru> 0.0.2-alt2
 - cleanup spec
 
