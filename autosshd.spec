@@ -53,7 +53,7 @@ if [ ! -f /var/lib/autosshd/.ssh/id_dsa ]; then
     cp /var/lib/autosshd/.ssh/id_dsa.pub /var/lib/autosshd/.ssh/authorized_keys
 fi
 chown -R %autossh_user:%autossh_group /var/lib/autosshd/
-chown %autossh_user:%autossh_group /var/run/autossh.d/
+chown %autossh_user:%autossh_group /var/run/autosshd/
 
 %post_service %name
 

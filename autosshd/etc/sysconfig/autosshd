@@ -6,8 +6,8 @@
 CONFIGDIR=/etc/autossh.d
 
 # Directory for store connection's PID-files
-PIDFILEDIR=/var/run/autossh.d
+PIDFILEDIR=/var/run/autosshd
 
 # Directory for store connection's lock-files
-LOCKFILEDIR=/var/lock/subsys/autossh.d
+LOCKFILEDIR=/var/lock/subsys/autosshd
 

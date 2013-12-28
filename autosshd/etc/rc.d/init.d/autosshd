@@ -78,7 +78,7 @@ do_run_one()
 {
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
-        start_daemon --pidfile "$AUTOSSH_PIDFILE" --make-pidfile --lockfile "/var/lock/subsys/autossh.d/$AUTOSSH_LOCKFILE" --user _autossh --name autossh  --displayname "autossh to ${HOST}" -- autossh ${AUTOSSH_OPTIONS}
+        start_daemon --pidfile "$AUTOSSH_PIDFILE" --make-pidfile --lockfile "/var/lock/subsys/autosshd/$AUTOSSH_LOCKFILE" --user _autossh --name autossh  --displayname "autossh to ${HOST}" -- autossh ${AUTOSSH_OPTIONS}
         RETVAL=$?
         sleep 1
         ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"

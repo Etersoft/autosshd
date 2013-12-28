@@ -39,7 +39,7 @@ AUTOSSH_MAXSTART=100
 
 #    AUTOSSH_MAXLIFETIME - set the maximum time to live (seconds)
 
-AUTOSSH_PIDFILE=/var/run/autossh.d/server1.pid
+AUTOSSH_PIDFILE=/var/run/autosshd/server1.pid
 AUTOSSH_LOCKFILE=server1.lck
 AUTOSSH_LOGFILE=/var/lib/autosshd/autosshd.log
 
