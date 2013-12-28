@@ -4,7 +4,7 @@
 
 Name: autosshd
 Version: 0.0.2
-Release: alt3
+Release: alt4
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
@@ -73,6 +73,9 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %dir /var/lock/subsys/%name/
 
 %changelog
+* Sat Dec 28 2013 Ivan Zakharyaschev <imz@altlinux.org> 0.0.2-alt4
+- Correct wrong paths in scripts, configs, and examples.
+
 * Tue Nov 19 2013 Vitaly Lipatov <lav@altlinux.ru> 0.0.2-alt3
 - initial build to ALT Linux Sisyphus
 
