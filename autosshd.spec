@@ -4,7 +4,7 @@
 
 Name: autosshd
 Version: 0.0.2
-Release: alt4
+Release: alt5
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
@@ -60,9 +60,21 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %preun
 %preun_service %name
 
-%postun
-%_sbindir/userdel -r %autossh_user 2>/dev/null ||:
-%_sbindir/groupdel -r %autossh_group 2>/dev/null ||:
+%triggerpostun -- autosshd < 0.0.2-alt5
+echo "Fixing permissions after faulty previous package:"
+%_sbindir/groupadd -r -f %autossh_group ||:
+%_sbindir/useradd  -r -g %autossh_group -c 'Autossh daemon' \
+	-s /dev/null -d /var/lib/autosshd %autossh_user ||:
+%_sbindir/usermod -p `pwgen -s 24 1` %autossh_user
+# We need to re-create the dir because userdel -r (from old postun) has removed it
+if [ ! -f /var/lib/autosshd/.ssh/id_dsa ]; then
+    mkdir -p /var/lib/autosshd/.ssh
+    /usr/bin/ssh-keygen -t dsa -b 1024 -C "AutoSSH daemon" -N "" -q -f /var/lib/autosshd/.ssh/id_dsa
+    echo "StrictHostKeyChecking no" > /var/lib/autosshd/.ssh/config
+    cp /var/lib/autosshd/.ssh/id_dsa.pub /var/lib/autosshd/.ssh/authorized_keys
+fi
+chown -R %autossh_user:%autossh_group /var/lib/autosshd/
+chown %autossh_user:%autossh_group /var/run/autosshd/
 
 %files
 %doc doc/*
@@ -73,6 +85,9 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %dir /var/lock/subsys/%name/
 
 %changelog
+* Sat Dec 28 2013 Ivan Zakharyaschev <imz@altlinux.org> 0.0.2-alt5
+- Fix user deletion after an upgrade according to http://www.altlinux.org/PseudoUserPolicy
+
 * Sat Dec 28 2013 Ivan Zakharyaschev <imz@altlinux.org> 0.0.2-alt4
 - Correct wrong paths in scripts, configs, and examples.
 
