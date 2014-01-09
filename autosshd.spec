@@ -4,12 +4,14 @@
 
 Name: autosshd
 Version: 0.0.2
-Release: alt6
+Release: alt7
 
 Summary: System administration - AutoSSH system level service
 Group: System/Servers
 License: GPL
 Url: http://wiki.etersoft.ru/Autosshd
+Packager: Vitaly Lipatov <lav@altlinux.ru>
+
 # http://git.etersoft.ru/people/lav/packages/autosshd.git
 Source: %name.tar
 
@@ -88,6 +90,9 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %dir /var/lock/subsys/%name/
 
 %changelog
+* Fri Jan 10 2014 Ivan Zakharyaschev <imz@altlinux.org> 0.0.2-alt7
+- Declare lav@ as the maintainer
+
 * Sat Dec 28 2013 Ivan Zakharyaschev <imz@altlinux.org> 0.0.2-alt6
 - Handle /var/lock/subsys/* and /var/run/* in tmpfiles.d
   (otherwise they used to be gone from the tmpfs after a reboot)
