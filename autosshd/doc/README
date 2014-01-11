@@ -7,3 +7,5 @@ no-agent-forwarding,command="echo 'This is connection to Etersoft server'; tail 
 3) Старт-стоп-статус, как для обычного сервера.
 4) Для успешного старта необходимо в /var/lib/opensshd/.ssh/config добавить настройки Host 
 для авторизации по ключам, как описано в документации ssh.
+
+См. также http://www.altlinux.org/Как_Ваш_компьютер_может_дать_доступ_к_себе_через_туннель_средствами_ssh,_autossh,_autosshd
