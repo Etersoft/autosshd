@@ -3,17 +3,19 @@
 %define autossh_group     _autossh
 
 Name: autosshd
-Version: 0.0.2
-Release: alt8
+Version: 0.0.3
+Release: alt1
 
 Summary: System administration - AutoSSH system level service
+
 Group: System/Servers
 License: GPL
 Url: http://wiki.etersoft.ru/Autosshd
+
 Packager: Vitaly Lipatov <lav@altlinux.ru>
 
 # http://git.etersoft.ru/people/lav/packages/autosshd.git
-Source: %name.tar
+Source: %name-%version.tar
 
 BuildArch: noarch
 
@@ -27,7 +29,7 @@ Requires: autossh
 Run autossh as system service at startup.
 
 %prep
-%setup -n autosshd
+%setup
 
 %install
 mkdir -p %buildroot%_initdir/
@@ -42,6 +44,8 @@ mkdir -p %buildroot%_docdir/%name/
 
 install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/%name
 install -D -m640 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
+mkdir -p %buildroot%_sysconfdir/tmpfiles.d/
+echo "d /var/run/%name 0775 root %autossh_group" > %buildroot%_sysconfdir/tmpfiles.d/%name.conf
 
 %pre
 # Add the "_autossh" user
@@ -53,7 +57,7 @@ install -D -m640 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
 %post
 if [ ! -f /var/lib/autosshd/.ssh/id_dsa ]; then
     mkdir -p /var/lib/autosshd/.ssh
-    /usr/bin/ssh-keygen -t dsa -b 1024 -C "AutoSSH daemon" -N "" -q -f /var/lib/autosshd/.ssh/id_dsa
+%_bindir/ssh-keygen -t dsa -b 1024 -C "AutoSSH daemon" -N "" -q -f /var/lib/autosshd/.ssh/id_dsa
     echo "StrictHostKeyChecking no" > /var/lib/autosshd/.ssh/config
     cp /var/lib/autosshd/.ssh/id_dsa.pub /var/lib/autosshd/.ssh/authorized_keys
 fi
@@ -83,6 +87,8 @@ chown %autossh_user:%autossh_group /var/run/autosshd/
 %files
 %doc doc/*
 %_initdir/%name
+%dir %_sysconfdir/autossh.d/
+%_sysconfdir/tmpfiles.d/%name.conf
 %config(noreplace) %_sysconfigdir/%name
 /lib/tmpfiles.d/%name.conf
 %attr(755,%autossh_user,%autossh_group) %dir /var/lib/%name/

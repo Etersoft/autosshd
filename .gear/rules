@@ -1,1 +1,1 @@
-tar: autosshd name=autosshd
+tar: @name@
