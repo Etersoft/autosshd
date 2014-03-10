@@ -22,7 +22,6 @@ SourceIfNotEmpty /etc/sysconfig/network
 SYSCONFIGFILE="/etc/sysconfig/autosshd"
 SourceIfNotEmpty $SYSCONFIGFILE
 
-BASE=autossh
 
 ###========= Functions =========
 #===== help message =====
@@ -48,17 +47,19 @@ help        - print this message.
     return $RETVAL
 }
 
+get_channels_list()
+{
+    /bin/ls $CONFIGDIR/*.conf 2>/dev/null
+}
+
 list_channels()
 {
-    LIST=`/bin/ls $CONFIGDIR/*.conf 2>/dev/null`
-    CHANNELS=""
+    LIST=$(get_channels_list)
     echo "Configured channels:"
-    if [ -n "$LIST" ]; then
         for config in $LIST; do
 	    SourceIfNotEmpty $config
 	    echo "   `basename $config .conf`. Manual: ${MANUAL} "
         done
-    fi
     return 0
 }
 
@@ -66,11 +67,9 @@ running_channels()
 {
     LIST=`/bin/ls $PIDFILEDIR/*.pid 2>/dev/null`
     CHANNELS=""
-    if [ -n "$LIST" ]; then
-        for proc in $LIST; do
-            CHANNELS="$CHANNELS`basename $proc .pid` "
-        done
-    fi
+    for proc in $LIST; do
+        CHANNELS="$CHANNELS`basename $proc .pid` "
+    done
     return 0
 }
 
@@ -78,9 +77,10 @@ do_run_one()
 {
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
-        start_daemon --pidfile "$AUTOSSH_PIDFILE" --make-pidfile --lockfile "/var/lock/subsys/autosshd/$AUTOSSH_LOCKFILE" --user _autossh --name autossh  --displayname "autossh to ${HOST}" -- autossh ${AUTOSSH_OPTIONS}
+        start_daemon --pidfile "$AUTOSSH_PIDFILE" --make-pidfile --lockfile "$LOCKFILEDIR/$AUTOSSH_LOCKFILE" --user $AUTOSSHUSER --name autossh  --displayname "autossh to ${HOST}" -- autossh ${AUTOSSH_OPTIONS}
         RETVAL=$?
         sleep 1
+	# strange hack: overwrite pidfile??
         ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"
         return $RETVAL
     else
@@ -95,9 +95,9 @@ do_stop_one()
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
 	if [ -s $AUTOSSH_PIDFILE ]; then
-	    ParentPID=${PIDFILEDIR}/${HOST}.ppid
+	    ParentPID=${PIDFILEDIR}/${HOST}.pid
 	    ps ax | grep -v grep | grep "parent of $(cat $AUTOSSH_PIDFILE)" | awk {'print $1'} > $ParentPID
-	    stop_daemon --pidfile "$ParentPID" --lockfile "$LOCKFILEDIR/$AUTOSSH_LOCKFILE" --expect-user _autossh --name autossh --displayname "autossh to ${HOST}" -- autossh
+	    stop_daemon --pidfile "$ParentPID" --lockfile "$LOCKFILEDIR/$AUTOSSH_LOCKFILE" --expect-user $AUTOSSHUSER --name autossh --displayname "autossh to ${HOST}" -- autossh
 	    RETVAL=$?
 	    rm -f "$AUTOSSH_PIDFILE"
 	    rm -f "$ParentPID"
@@ -122,12 +122,12 @@ show_status()
         fi
 
         if [ -z "$CHANNELS" ]; then
-                msg_not_running $BASE
+                msg_not_running autossh
                 echo
                 RETVAL=1
         else
-                for CHANNEL in $CHANNELS; do 
-            	    status --pidfile "$PIDFILEDIR/$CHANNEL.pid" --lockfile "$LOCKFILEDIR/$CHANNEL.lck" --expect-user _autossh --name ssh --displayname "autossh to $CHANNEL" -- autossh
+                for CHANNEL in $CHANNELS; do
+                    status --pidfile "$PIDFILEDIR/$CHANNEL.pid" --lockfile "$LOCKFILEDIR/$CHANNEL.lck" --expect-user $AUTOSSHUSER --name ssh --displayname "autossh to $CHANNEL" -- autossh
                     RETVAL=$(( $RETVAL + $? ))
                 done
         fi
@@ -136,42 +136,45 @@ show_status()
 
 start()
 {
-    LIST=`/bin/ls $CONFIGDIR/*.conf 2>/dev/null`
-    CHANNELS=""
-        if [ -n "$LIST" ]; then
-            for config in $LIST; do
-		SourceIfNotEmpty $config
-		is_no $MANUAL && do_run_one $config
-            done
-        fi
+    # run only listed channels
+    if [ -n "$CHANNELS" ] ; then
+        for i in $CHANNELS; do
+            do_run_one $CONFIGDIR/$i.conf
+        done
+        return 0
+    fi
+
+    # run all scheduled channels
+    CHANNELS=$(get_channels_list)
+    for config in $CHANNELS; do
+        SourceIfNotEmpty $config
+        is_no $MANUAL && do_run_one $config
+    done
     return 0
 }
 
 stop()
 {
-    running_channels
-    if [ -n "$CHANNELS" ]; then
-        for config in $CHANNELS; do
-	    SourceIfNotEmpty $config
-	    do_stop_one $CONFIGDIR/$config.conf
-	done
-    fi
+    CHANNELS="$@"
+
+    [ -n "$CHANNELS" ] || running_channels
+    for config in $CHANNELS; do
+        SourceIfNotEmpty $config
+        do_stop_one $CONFIGDIR/$config.conf
+    done
     return 0
 }
 
 reload()
 {
     running_channels
-    if [ -n "$CHANNELS" ]; then
-        for config in $CHANNELS; do
-	    SourceIfNotEmpty $config
-	    do_stop_one $CONFIGDIR/$config.conf
-	    sleep 1
-	    do_run_one $CONFIGDIR/$config.conf
-	done
-    fi
+    for config in $CHANNELS; do
+        SourceIfNotEmpty $config
+        do_stop_one $CONFIGDIR/$config.conf
+        sleep 1
+        do_run_one $CONFIGDIR/$config.conf
+    done
     return 0
-
 }
 
 ###====== Main =====
@@ -179,47 +182,35 @@ RETVAL=0
 
 OP=$1
 shift
-CHANNELS=$@
+CHANNELS="$@"
 
 is_yes "$NETWORKING" || return 0
 
 # See how we were called.
 case "$OP" in
         start)
-	    if [ "x$CHANNELS" = "x" ]; then
-                start 
-	    else
-		for i in "$CHANNELS"; do
-		    do_run_one $CONFIGDIR/$i.conf
-		done
-	    fi
-        ;;
+            start
+            ;;
         stop)
-	    if [ "x$CHANNELS" = "x" ]; then
-                stop
-	    else
-		for i in "$CHANNELS"; do
-		    do_stop_one $CONFIGDIR/$i.conf
-		done
-	    fi
-        ;;
-        reload)
-	    reload
-	;;
-	restart)
             stop
-	    sleep 2
-	    start
-        ;;
+            ;;
+        reload)
+            reload
+            ;;
+        restart)
+            stop
+            sleep 2
+            start
+            ;;
         status)
             show_status
-        ;;
+            ;;
         list)
             list_channels
-        ;;
+            ;;
         help)
             help
-        ;;
+            ;;
         *)
                 msg_usage "${0##*/} {start|stop|reload|restart|status|list|help}"
                 RETVAL=1
