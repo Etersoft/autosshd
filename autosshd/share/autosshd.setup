@@ -1,0 +1,29 @@
+#!/bin/sh
+
+fatal()
+{
+	echo "$@"
+	exit 1
+}
+
+# $1 - user, $2 - command
+run_as()
+{
+	su -l -c "$2" -s /bin/sh $1
+}
+
+. /etc/sysconfig/autosshd || fatal "config file is absent"
+
+AUTOSSHSCRIPTDIR=$(dirname $0) || fatal
+
+if [ -z "$AUTOSSHDIR" ] ; then
+	fatal "AUTOSSHDIR is empty"
+fi
+
+if [ ! -d $AUTOSSHDIR ] ; then
+	fatal "$AUTOSSHDIR directory does not exist"
+fi
+
+run_as $AUTOSSHUSER $AUTOSSHSCRIPTDIR/autosshd.setup.user
+
+#chown -R %autossh_user:%autossh_group /var/lib/autosshd/
