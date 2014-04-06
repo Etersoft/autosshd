@@ -1,0 +1,28 @@
+# Config for autossh pretuned for anyssh.ru service
+# see man autossh
+# http://wiki.etersoft.ru/Autosshd
+# http://blog.sozinov.eu/2009/08/autossh.html
+
+AUTOSSH_LOGLEVEL=4
+AUTOSSH_POLL=120
+AUTOSSH_GATETIME=0
+AUTOSSH_DEBUG=no
+
+# connection params
+HOST=anyssh.ru
+REMOTESSH_USER=aNNNN
+
+# port redirect
+LOCAL_PORT=10022
+REMOTE_PORT=NNNN
+
+REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa
+
+# monitoring local port (port+1 will used too, see man autossh)
+AUTOSSH_PORT=11185
+
+MANUAL=no
+
+SSH_OPTIONS="-i ${REMOTE_KEY} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${REMOTESSH_USER}@${HOST}"
+
+AUTOSSH_OPTIONS="-N -M ${AUTOSSH_PORT} -f ${SSH_OPTIONS}"
