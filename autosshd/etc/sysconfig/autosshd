@@ -13,3 +13,7 @@ LOCKFILEDIR=/var/lock/subsys/autosshd
 
 # User for run autossh
 AUTOSSHUSER=_autossh
+
+# Home directory for user AUTOSSHUSER
+AUTOSSHDIR=/var/lib/autosshd
+

@@ -1,6 +1,6 @@
 1) Для успешного соединения создайте на удаленном сервере пользователя (_autossh) и 
 добавьте строку вида
-no-agent-forwarding,command="echo 'This is connection to Etersoft server'; tail -f /dev/null" ssh-dss ...
+no-agent-forwarding,command="echo 'This is connection to the server'" ssh-dss ...
 с соответствующим ключом.
 2) Создайте файл с параметрами подключения (пользователь, сервер, порт) в /etc/autossh.d/
    Файл должен иметь расширение .conf для поиска настроек старт-стоп скриптом.
