@@ -79,6 +79,13 @@ install -m644 etc/autossh.d/*.conf.template %buildroot%_sysconfdir/autossh.d/
 %dir %_locksubsysdir/%name/
 
 %changelog
+* Mon Jul 07 2014 Vitaly Lipatov <lav@altlinux.ru> 0.0.3-alt1
+- development release
+- rewrite init script
+- add anyssh.ru.conf.example
+- add unused generate key script
+- cleanup spec, move initialize code to a separate script
+
 * Sat Jan 11 2014 Ivan Zakharyaschev <imz@altlinux.org> 0.0.2-alt8
 - doc: Added links to some guides (how to make use of autosshd).
 
