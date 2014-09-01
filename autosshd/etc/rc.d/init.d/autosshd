@@ -77,11 +77,19 @@ do_run_one()
 {
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
+
+	# skip if in manual mode
+	is_no $MANUAL || return 0
+
+        # FIXME
+        AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
+
         start_daemon --pidfile "$AUTOSSH_PIDFILE" --make-pidfile --lockfile "$LOCKFILEDIR/$AUTOSSH_LOCKFILE" --user $AUTOSSHUSER --name autossh  --displayname "autossh to ${HOST}" -- autossh ${AUTOSSH_OPTIONS}
         RETVAL=$?
         sleep 1
-	# strange hack: overwrite pidfile??
-        ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"
+
+        # strange hack: overwrite pidfile??
+        #ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"
         return $RETVAL
     else
 	echo "Configuration file $1 not found"
@@ -95,12 +103,13 @@ do_stop_one()
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
 	if [ -s $AUTOSSH_PIDFILE ]; then
-	    ParentPID=${PIDFILEDIR}/${HOST}.pid
-	    ps ax | grep -v grep | grep "parent of $(cat $AUTOSSH_PIDFILE)" | awk {'print $1'} > $ParentPID
-	    stop_daemon --pidfile "$ParentPID" --lockfile "$LOCKFILEDIR/$AUTOSSH_LOCKFILE" --expect-user $AUTOSSHUSER --name autossh --displayname "autossh to ${HOST}" -- autossh
+	    AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
+	    #ParentPID=${PIDFILEDIR}/${HOST}.pid
+	    #ps ax | grep -v grep | grep "parent of $(cat $AUTOSSH_PIDFILE)" | awk {'print $1'} > $ParentPID
+	    stop_daemon --pidfile "$AUTOSSH_PIDFILE" --lockfile "$LOCKFILEDIR/$AUTOSSH_LOCKFILE" --expect-user $AUTOSSHUSER --name autossh --displayname "autossh to ${HOST}" -- autossh
 	    RETVAL=$?
 	    rm -f "$AUTOSSH_PIDFILE"
-	    rm -f "$ParentPID"
+	    #rm -f "$ParentPID"
 	    return $RETVAL
 	else
 	    msg_not_running "autossh for `basename $1 .conf`"
@@ -117,9 +126,7 @@ do_stop_one()
 show_status()
 {
         RETVAL=0
-        if [ -z "$CHANNELS" ]; then # Show status of every running channel
-                running_channels
-        fi
+        [ -n "$CHANNELS" ] || running_channels
 
         if [ -z "$CHANNELS" ]; then
                 msg_not_running autossh
@@ -148,31 +155,18 @@ start()
     CHANNELS=$(get_channels_list)
     for config in $CHANNELS; do
         SourceIfNotEmpty $config
-        is_no $MANUAL && do_run_one $config
+        do_run_one $config
     done
     return 0
 }
 
 stop()
 {
-    CHANNELS="$@"
-
     [ -n "$CHANNELS" ] || running_channels
-    for config in $CHANNELS; do
-        SourceIfNotEmpty $config
-        do_stop_one $CONFIGDIR/$config.conf
-    done
-    return 0
-}
 
-reload()
-{
-    running_channels
     for config in $CHANNELS; do
         SourceIfNotEmpty $config
         do_stop_one $CONFIGDIR/$config.conf
-        sleep 1
-        do_run_one $CONFIGDIR/$config.conf
     done
     return 0
 }
@@ -194,8 +188,10 @@ case "$OP" in
         stop)
             stop
             ;;
-        reload)
-            reload
+        reload|condreload)
+            stop
+            sleep 2
+            start
             ;;
         restart)
             stop
