@@ -45,15 +45,18 @@ d %_locksubsysdir/%name 0755 root root
 EOF
 
 mkdir -p %buildroot/%autossh_dir/.ssh/
-echo "StrictHostKeyChecking no" > %buildroot%autossh_dir/.ssh/config
+#echo "StrictHostKeyChecking no" > %buildroot%autossh_dir/.ssh/config
 
 mkdir -p %buildroot%_docdir/%name/
 
-install -D -m750 etc/rc.d/init.d/autosshd %buildroot%_initdir/%name
+install -D -m754 etc/rc.d/init.d/autosshd %buildroot%_initdir/%name
 # TODO: we need automate filling of this config
-install -D -m640 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
+install -D -m644 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
 
 install -m644 etc/autossh.d/*.conf.template %buildroot%_sysconfdir/autossh.d/
+
+mkdir -p %buildroot%_sbindir/
+cp -a share/autosshd.setup* %buildroot%_sbindir/
 
 %pre
 # Add the "_autossh" user
@@ -77,6 +80,8 @@ install -m644 etc/autossh.d/*.conf.template %buildroot%_sysconfdir/autossh.d/
 %_tmpfilesdir/%name.conf
 %attr(750,%autossh_user,%autossh_group) %dir %_runtimedir/%name/
 %dir %_locksubsysdir/%name/
+%_sbindir/autosshd.setup
+%_sbindir/autosshd.setup.user
 
 %changelog
 * Mon Jul 07 2014 Vitaly Lipatov <lav@altlinux.ru> 0.0.3-alt1
