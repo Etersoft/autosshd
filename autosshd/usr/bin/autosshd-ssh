@@ -1,0 +1,16 @@
+#!/bin/sh
+
+help(){
+    echo \
+"Usage: ${0##*/} SERVER
+SERVER  - name of anysshd conf file
+Example:
+${0##*/} anyssh.ru # if exist config /etc/autossh.d/anyssh.ru.conf"
+}
+
+if [ -n "$1" ] ; then
+    . /etc/autossh.d/"$1".conf
+    ssh ${SSH_OPTIONS}
+else
+    help
+fi
