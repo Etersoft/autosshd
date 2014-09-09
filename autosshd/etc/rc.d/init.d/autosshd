@@ -8,7 +8,7 @@
 #
 
 processname="autossh"
-startname="autossh-conf"
+startname="autossh-conf" #need for export var, because start shell by one user and run autossh by another
 # processname: $processname
 #
 
@@ -46,6 +46,8 @@ reload      - restart only running channels
 list        - print list of configured channels
 status      - print status of running channels
 help        - print this message.
+testssh     - test connection configuration by ssh.
+
 "
     RETVAL=1
     return $RETVAL
@@ -63,9 +65,6 @@ do_run_one()
         --user $AUTOSSHUSER --displayname "autossh to ${HOST}" -- $startname $1 "${AUTOSSH_OPTIONS}"
         RETVAL=$?
         sleep 1
-
-        # strange hack: overwrite pidfile??
-        #ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"
         return $RETVAL
     else
 	echo "Configuration file $1 not found"
@@ -79,13 +78,9 @@ do_stop_one()
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
 	if [ -s $AUTOSSH_PIDFILE ]; then
-	    #ParentPID=${PIDFILEDIR}/${HOST}.pid
-	    #ps ax | grep -v grep | grep "parent of $(cat $AUTOSSH_PIDFILE)" | awk {'print $1'} > $ParentPID
 	    stop_daemon --pidfile "$AUTOSSH_PIDFILE" --lockfile "$AUTOSSH_LOCKFILE" \
 	    --expect-user $AUTOSSHUSER --name $processname --displayname "autossh to ${HOST}" -- $processname
 	    RETVAL=$?
-	    #rm -f "$AUTOSSH_PIDFILE"
-	    #rm -f "$ParentPID"
 	    return $RETVAL
 	else
 	    msg_not_running "autossh for `basename $1 .conf`"
@@ -110,7 +105,9 @@ show_status()
                 RETVAL=1
         else
                 for CHANNEL in $CHANNELS; do
-                    status --pidfile "$PIDFILEDIR/$CHANNEL.pid" --lockfile "$LOCKFILEDIR/$CHANNEL.lck" --expect-user $AUTOSSHUSER --name ssh --displayname "autossh to $CHANNEL" -- $processname
+	            init_autossh $config
+                    status --pidfile "$PIDFILEDIR/$CHANNEL.pid" --lockfile "$LOCKFILEDIR/$CHANNEL.lck" \
+                    --expect-user $AUTOSSHUSER --name $processname --displayname "autossh to $CHANNEL" -- $processname
                     RETVAL=$(( $RETVAL + $? ))
                 done
         fi
@@ -132,7 +129,6 @@ start()
     CHANNELS=$(get_channels_list)
     for config in $CHANNELS; do
         init_autossh $config
-#        SourceIfNotEmpty $config
         do_run_one $config
     done
     return 0
@@ -212,6 +208,9 @@ case "$OP" in
             ;;
         help)
             help
+            ;;
+        testssh)
+            autosshd-ssh
             ;;
         *)
                 msg_usage "${0##*/} {start|stop|reload|restart|status|list|help}"

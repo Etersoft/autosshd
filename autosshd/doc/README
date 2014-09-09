@@ -1,14 +1,6 @@
-1) Для успешного соединения создайте на удаленном сервере пользователя (_autossh) и 
-добавьте строку вида
-no-agent-forwarding,command="echo 'This is connection to the server'" ssh-dss ...
-с соответствующим ключом.
-2) Создайте файл с параметрами подключения (пользователь, сервер, порт) в /etc/autossh.d/
-   Файл должен иметь расширение .conf для поиска настроек старт-стоп скриптом.
-3) Старт-стоп-статус, как для обычного сервера.
-4) Для успешного старта необходимо в /var/lib/opensshd/.ssh/config добавить настройки Host 
-для авторизации по ключам, как описано в документации ssh.
-
-См. также:
-
-* https://bugzilla.altlinux.org/show_bug.cgi?id=29243
-* http://www.altlinux.org/Как_Ваш_компьютер_может_дать_доступ_к_себе_через_туннель_средствами_ssh,_autossh,_autosshd
+# Config for autossh pretuned for anyssh.ru service
+# see man autossh
+# http://wiki.etersoft.ru/Autosshd
+#
+# 1) Create config as /etc/autossh.d/anyssh.ru.conf.template
+# 2) Run service autosshd start
