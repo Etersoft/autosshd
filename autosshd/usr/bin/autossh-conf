@@ -1,0 +1,34 @@
+#!/bin/sh
+# autosshd-conf      shell for autosshd that export variables from root to _anyssh user
+
+# Source function library.
+. /etc/init.d/functions
+
+# Autosshd variables.
+AUTOSSH_LOGLEVEL=7
+AUTOSSH_POLL=120
+AUTOSSH_GATETIME=0
+AUTOSSH_DEBUG=yes
+
+# AutoSSHDaemon configuration
+SYSCONFIGFILE="/etc/sysconfig/autosshd"
+SourceIfNotEmpty $SYSCONFIGFILE
+
+init_autossh(){
+    export AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
+    export AUTOSSH_LOCKFILE=${LOCKFILEDIR}/$(basename $1 .conf).lck
+    export AUTOSSH_LOGFILE=/var/lib/autosshd/$(basename $1 .conf).log
+}
+
+run_autossh(){
+    autossh $@
+}
+
+#Fix for import init function
+if [ -n "$1" ] ; then
+    init_autossh $1
+    shift
+    run_autossh $@
+fi
+
+

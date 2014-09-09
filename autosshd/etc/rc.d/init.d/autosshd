@@ -6,7 +6,10 @@
 #
 # description: autosshd run autossh as system service
 #
-# processname: autossh
+
+processname="autossh"
+startname="autossh-conf"
+# processname: $processname
 #
 
 # Do not load RH compatibility interface.
@@ -15,24 +18,13 @@ WITHOUT_RC_COMPAT=1
 # Source function library.
 . /etc/init.d/functions
 
-# Autosshd variables 
-AUTOSSH_LOGLEVEL=4
-AUTOSSH_POLL=120
-AUTOSSH_GATETIME=0
-AUTOSSH_DEBUG=yes.
-#FIX call in cycle for all conf
-init_autossh(){
-    AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
-    AUTOSSH_LOCKFILE=$LOCKFILEDIR/$(basename $1 .conf).lck
-    AUTOSSH_LOGFILE=/var/lib/autosshd/$(basename $1 .conf).log
-}
-
 # Source networking configuration.
 SourceIfNotEmpty /etc/sysconfig/network
 
 # AutoSSHDaemon configuration
 SYSCONFIGFILE="/etc/sysconfig/autosshd"
 SourceIfNotEmpty $SYSCONFIGFILE
+SourceIfNotEmpty "/usr/bin/$startname"
 
 
 ###========= Functions =========
@@ -57,6 +49,105 @@ help        - print this message.
 "
     RETVAL=1
     return $RETVAL
+}
+
+do_run_one()
+{
+    if [ -f $1 ]; then
+	SourceIfNotEmpty $1
+
+	# skip if in manual mode
+	is_no $MANUAL || return 0
+
+        start_daemon --lockfile "$AUTOSSH_LOCKFILE" \
+        --user $AUTOSSHUSER --displayname "autossh to ${HOST}" -- $startname $1 "${AUTOSSH_OPTIONS}"
+        RETVAL=$?
+        sleep 1
+
+        # strange hack: overwrite pidfile??
+        #ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"
+        return $RETVAL
+    else
+	echo "Configuration file $1 not found"
+	RETVAL=1
+        return $RETVAL
+    fi
+}
+
+do_stop_one()
+{
+    if [ -f $1 ]; then
+	SourceIfNotEmpty $1
+	if [ -s $AUTOSSH_PIDFILE ]; then
+	    #ParentPID=${PIDFILEDIR}/${HOST}.pid
+	    #ps ax | grep -v grep | grep "parent of $(cat $AUTOSSH_PIDFILE)" | awk {'print $1'} > $ParentPID
+	    stop_daemon --pidfile "$AUTOSSH_PIDFILE" --lockfile "$AUTOSSH_LOCKFILE" \
+	    --expect-user $AUTOSSHUSER --name $processname --displayname "autossh to ${HOST}" -- $processname
+	    RETVAL=$?
+	    #rm -f "$AUTOSSH_PIDFILE"
+	    #rm -f "$ParentPID"
+	    return $RETVAL
+	else
+	    msg_not_running "autossh for `basename $1 .conf`"
+	    echo
+	fi
+    else
+	echo "Configuration file $1 not found"
+	RETVAL=1
+        return $RETVAL
+    fi
+}
+
+
+show_status()
+{
+        RETVAL=0
+        [ -n "$CHANNELS" ] || running_channels
+
+        if [ -z "$CHANNELS" ]; then
+                msg_not_running autossh
+                echo
+                RETVAL=1
+        else
+                for CHANNEL in $CHANNELS; do
+                    status --pidfile "$PIDFILEDIR/$CHANNEL.pid" --lockfile "$LOCKFILEDIR/$CHANNEL.lck" --expect-user $AUTOSSHUSER --name ssh --displayname "autossh to $CHANNEL" -- $processname
+                    RETVAL=$(( $RETVAL + $? ))
+                done
+        fi
+        return $RETVAL
+}
+
+start()
+{
+    # run only listed channels
+    if [ -n "$CHANNELS" ] ; then
+        for i in $CHANNELS; do
+            do_run_one $CONFIGDIR/$i.conf
+            init_autossh $config
+        done
+        return 0
+    fi
+
+    # run all scheduled channels
+    CHANNELS=$(get_channels_list)
+    for config in $CHANNELS; do
+        init_autossh $config
+#        SourceIfNotEmpty $config
+        do_run_one $config
+    done
+    return 0
+}
+
+stop()
+{
+    [ -n "$CHANNELS" ] || running_channels
+
+    for config in $CHANNELS; do
+        SourceIfNotEmpty $config
+        init_autossh $config
+        do_stop_one $CONFIGDIR/$config.conf
+    done
+    return 0
 }
 
 get_channels_list()
@@ -85,104 +176,6 @@ running_channels()
     return 0
 }
 
-do_run_one()
-{
-    if [ -f $1 ]; then
-	SourceIfNotEmpty $1
-
-	# skip if in manual mode
-	is_no $MANUAL || return 0
-
-        start_daemon --pidfile "$AUTOSSH_PIDFILE" --make-pidfile --lockfile "$AUTOSSH_LOCKFILE" --user $AUTOSSHUSER --name autossh  --displayname "autossh to ${HOST}" -- autossh ${AUTOSSH_OPTIONS}
-        RETVAL=$?
-        sleep 1
-
-        # strange hack: overwrite pidfile??
-        #ps ax | grep -v grep | grep ${AUTOSSH_PORT} | awk {'print $1'} > "$AUTOSSH_PIDFILE"
-        return $RETVAL
-    else
-	echo "Configuration file $1 not found"
-	RETVAL=1
-        return $RETVAL
-    fi
-}
-
-do_stop_one()
-{
-    if [ -f $1 ]; then
-	SourceIfNotEmpty $1
-	if [ -s $AUTOSSH_PIDFILE ]; then
-	    #ParentPID=${PIDFILEDIR}/${HOST}.pid
-	    #ps ax | grep -v grep | grep "parent of $(cat $AUTOSSH_PIDFILE)" | awk {'print $1'} > $ParentPID
-	    stop_daemon --pidfile "$AUTOSSH_PIDFILE" --lockfile "$AUTOSSH_LOCKFILE" --expect-user $AUTOSSHUSER --name autossh --displayname "autossh to ${HOST}" -- autossh
-	    RETVAL=$?
-	    rm -f "$AUTOSSH_PIDFILE"
-	    #rm -f "$ParentPID"
-	    return $RETVAL
-	else
-	    msg_not_running "autossh for `basename $1 .conf`"
-	    echo
-	fi
-    else
-	echo "Configuration file $1 not found"
-	RETVAL=1
-        return $RETVAL
-    fi
-}
-
-
-show_status()
-{
-        RETVAL=0
-        [ -n "$CHANNELS" ] || running_channels
-
-        if [ -z "$CHANNELS" ]; then
-                msg_not_running autossh
-                echo
-                RETVAL=1
-        else
-                for CHANNEL in $CHANNELS; do
-                    status --pidfile "$PIDFILEDIR/$CHANNEL.pid" --lockfile "$LOCKFILEDIR/$CHANNEL.lck" --expect-user $AUTOSSHUSER --name ssh --displayname "autossh to $CHANNEL" -- autossh
-                    RETVAL=$(( $RETVAL + $? ))
-                done
-        fi
-        return $RETVAL
-}
-
-start()
-{
-    # run only listed channels
-    if [ -n "$CHANNELS" ] ; then
-        for i in $CHANNELS; do
-            init_autossh $i.conf
-            do_run_one $CONFIGDIR/$i.conf
-        done
-        return 0
-    fi
-
-    # run all scheduled channels
-    CHANNELS=$(get_channels_list)
-    for config in $CHANNELS; do
-        SourceIfNotEmpty $config
-        init_autossh $config
-        do_run_one $config
-    done
-    return 0
-}
-
-stop()
-{
-    [ -n "$CHANNELS" ] || running_channels
-
-    for config in $CHANNELS; do
-        SourceIfNotEmpty $config
-        init_autossh $config
-        do_stop_one $CONFIGDIR/$config.conf
-    done
-    return 0
-}
-
-init_autossh
 
 ###====== Main =====
 RETVAL=0
