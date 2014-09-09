@@ -4,21 +4,16 @@
 # Source function library.
 . /etc/init.d/functions
 
-# Autosshd variables.
-AUTOSSH_LOGLEVEL=7
-AUTOSSH_POLL=120
-AUTOSSH_GATETIME=0
-AUTOSSH_DEBUG=yes
-
 # AutoSSHDaemon configuration
 SYSCONFIGFILE="/etc/sysconfig/autosshd"
 SourceIfNotEmpty $SYSCONFIGFILE
 
 init_autossh(){
+    export AUTOSSH_LOGLEVEL AUTOSSH_POLL AUTOSSH_GATETIME AUTOSSH_DEBUG
     export AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
     export AUTOSSH_LOCKFILE=${LOCKFILEDIR}/$(basename $1 .conf).lck
     export AUTOSSH_LOGFILE=/var/lib/autosshd/$(basename $1 .conf).log
-}
+} #TODO check file for writible
 
 run_autossh(){
     autossh $@

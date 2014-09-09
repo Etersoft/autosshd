@@ -17,3 +17,8 @@ AUTOSSHUSER=_autossh
 # Home directory for user AUTOSSHUSER
 AUTOSSHDIR=/var/lib/autosshd
 
+# Autosshd variables.
+AUTOSSH_LOGLEVEL=7
+AUTOSSH_POLL=120
+AUTOSSH_GATETIME=0
+AUTOSSH_DEBUG=yes
