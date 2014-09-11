@@ -5,7 +5,7 @@
 
 Name: autosshd
 Version: 0.0.3
-Release: alt1
+Release: alt2
 
 Summary: System administration - AutoSSH system level service
 
@@ -56,7 +56,10 @@ install -D -m644 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
 install -m644 etc/autossh.d/*.conf.template %buildroot%_sysconfdir/autossh.d/
 
 mkdir -p %buildroot%_sbindir/
-cp -a share/autosshd.setup* %buildroot%_sbindir/
+mkdir -p %buildroot%_bindir/
+cp bin/autosshd-ssh %buildroot%_bindir/
+cp share/autossh-conf %buildroot%_sbindir/
+cp share/autosshd.setup* %buildroot%_sbindir/
 
 %pre
 # Add the "_autossh" user
@@ -81,9 +84,17 @@ cp -a share/autosshd.setup* %buildroot%_sbindir/
 %attr(750,%autossh_user,%autossh_group) %dir %_runtimedir/%name/
 %dir %_locksubsysdir/%name/
 %_sbindir/autosshd.setup
+%_bindir/autosshd-ssh
 %_sbindir/autosshd.setup.user
 
 %changelog
+* Thu Sep 11 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt2
+- rewrite doc
+- rewrite init script
+- added new scripts:
+- autosshd-conf for export variables to _anyssh user
+- autosshd-ssh for test connection over ssh
+
 * Mon Jul 07 2014 Vitaly Lipatov <lav@altlinux.ru> 0.0.3-alt1
 - development release
 - rewrite init script
