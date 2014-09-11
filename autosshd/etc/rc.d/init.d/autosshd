@@ -59,10 +59,10 @@ do_run_one()
 	SourceIfNotEmpty $1
 
 	# skip if in AUTOSTART mode
-	$AUTOSTART || return 0
+	is_yes "$AUTOSTART" || return 0
 
         start_daemon --lockfile "$AUTOSSH_LOCKFILE" \
-        --user $AUTOSSHUSER --displayname "autossh to ${HOST}" -- $startname $1 "${AUTOSSH_OPTIONS}"
+            --user $AUTOSSHUSER --displayname "autossh to ${HOST}" -- $startname $1 "${AUTOSSH_OPTIONS}"
         RETVAL=$?
         sleep 1
         return $RETVAL
@@ -79,7 +79,7 @@ do_stop_one()
 	SourceIfNotEmpty $1
 	if [ -s $AUTOSSH_PIDFILE ]; then
 	    stop_daemon --pidfile "$AUTOSSH_PIDFILE" --lockfile "$AUTOSSH_LOCKFILE" \
-	    --expect-user $AUTOSSHUSER --name $processname --displayname "autossh to ${HOST}" -- $processname
+	        --expect-user $AUTOSSHUSER --name $processname --displayname "autossh to ${HOST}" -- $processname
 	    RETVAL=$?
 	    return $RETVAL
 	else

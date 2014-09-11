@@ -14,7 +14,7 @@ LOCAL_PORT=22 		# port that linstening sshd
 REMOTE_PORT=10210 	# port for ssh comand on HOST $ ssh -p $REMOTE_PORT $REMOTESSH_USER@127.0.0.1
 AUTOSSH_PORT=11210 	# monitoring local port (port+1 will used too, see man autossh)
 
-AUTOSTART=true
+AUTOSTART=yes
 
 SSH_OPTIONS="-N -i ${REMOTE_KEY} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${REMOTESSH_USER}@${HOST} -o StrictHostKeychecking=no"
 AUTOSSH_OPTIONS="-M ${AUTOSSH_PORT} -f ${SSH_OPTIONS}"
