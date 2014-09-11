@@ -8,7 +8,7 @@
 #
 
 processname="autossh"
-startname="autossh-conf" #need for export var, because start shell by one user and run autossh by another
+startname="/usr/share/autosshd/autossh-conf" #need for export var, because start shell by one user and run autossh by another
 # processname: $processname
 #
 
@@ -24,7 +24,7 @@ SourceIfNotEmpty /etc/sysconfig/network
 # AutoSSHDaemon configuration
 SYSCONFIGFILE="/etc/sysconfig/autosshd"
 SourceIfNotEmpty $SYSCONFIGFILE
-SourceIfNotEmpty "/usr/bin/$startname"
+SourceIfNotEmpty "$startname"
 
 
 ###========= Functions =========
@@ -187,10 +187,10 @@ case "$OP" in
         start)
             start
             ;;
-        stop)
+        stop|condstop)
             stop
             ;;
-        reload|condreload)
+        reload|condrestart)
             stop
             sleep 2
             start
@@ -213,7 +213,7 @@ case "$OP" in
 	    su - -c "autosshd-ssh $1" _autossh
             ;;
         *)
-                msg_usage "${0##*/} {start|stop|reload|restart|status|list|help|testssh}"
+                msg_usage "${0##*/} {start|stop|reload|condrestart|condstop|restart|status|list|help|testssh}"
                 RETVAL=1
 esac
 

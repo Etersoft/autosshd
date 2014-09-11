@@ -55,11 +55,11 @@ install -D -m644 etc/sysconfig/autosshd %buildroot%_sysconfigdir/%name
 
 install -m644 etc/autossh.d/*.conf.template %buildroot%_sysconfdir/autossh.d/
 
-mkdir -p %buildroot%_sbindir/
+mkdir -p %buildroot%_datadir/%name/
 mkdir -p %buildroot%_bindir/
-cp bin/autosshd-ssh %buildroot%_bindir/
-cp share/autossh-conf %buildroot%_sbindir/
-cp share/autosshd.setup* %buildroot%_sbindir/
+cp usr/bin/autosshd-ssh %buildroot%_bindir/
+cp share/autossh-conf %buildroot%_datadir/%name/
+cp share/autosshd.setup* %buildroot%_datadir/%name/
 
 %pre
 # Add the "_autossh" user
@@ -83,9 +83,11 @@ cp share/autosshd.setup* %buildroot%_sbindir/
 %_tmpfilesdir/%name.conf
 %attr(750,%autossh_user,%autossh_group) %dir %_runtimedir/%name/
 %dir %_locksubsysdir/%name/
-%_sbindir/autosshd.setup
+%dir %_datadir/%name/
+%_datadir/%name/autossh-conf
+%_datadir/%name/autosshd.setup
+%_datadir/%name/autosshd.setup.user
 %_bindir/autosshd-ssh
-%_sbindir/autosshd.setup.user
 
 %changelog
 * Thu Sep 11 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt2
