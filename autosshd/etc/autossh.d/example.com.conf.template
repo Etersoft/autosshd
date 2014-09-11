@@ -1,0 +1,20 @@
+# Config for autossh pretuned for anyssh.ru service
+# Manual: http://wiki.etersoft.ru/Autosshd
+
+# Connection params
+#1 Set you remote host addres or ip
+HOST=example.com
+#2 Create user 
+REMOTESSH_USER=_autossh
+#3 Copy user private id_dsa from $HOST to home anyssh/.ssh dir and check acess rights 600
+REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa.$HOST.$REMOTESSH_USER
+
+# Change port if need
+LOCAL_PORT=22 		# port that linstening sshd
+REMOTE_PORT=10210 	# port for ssh comand on HOST $ ssh -p $REMOTE_PORT $REMOTESSH_USER@127.0.0.1
+AUTOSSH_PORT=11210 	# monitoring local port (port+1 will used too, see man autossh)
+
+AUTOSTART=true
+
+SSH_OPTIONS="-N -i ${REMOTE_KEY} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${REMOTESSH_USER}@${HOST} -o StrictHostKeychecking=no"
+AUTOSSH_OPTIONS="-M ${AUTOSSH_PORT} -f ${SSH_OPTIONS}"
