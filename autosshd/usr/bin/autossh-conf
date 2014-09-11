@@ -1,27 +1,29 @@
 #!/bin/sh
 # autosshd-conf      shell for autosshd that export variables from root to _anyssh user
 
-# Source function library.
-. /etc/init.d/functions
-
-# AutoSSHDaemon configuration
-SYSCONFIGFILE="/etc/sysconfig/autosshd"
-SourceIfNotEmpty $SYSCONFIGFILE
-AUTOSSH_FILES="AUTOSSH_LOGFILE AUTOSSH_LOCKFILE AUTOSSH_PIDFILE"
 
 init_autossh(){
+    # Source function library.
+    . /etc/init.d/functions
+
+    # AutoSSHDaemon configuration
+    SYSCONFIGFILE="/etc/sysconfig/autosshd"
+    SourceIfNotEmpty $SYSCONFIGFILE
     AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
     AUTOSSH_LOCKFILE=${LOCKFILEDIR}/$(basename $1 .conf).lck
     AUTOSSH_LOGFILE=/var/lib/autosshd/$(basename $1 .conf).log
     export AUTOSSH_LOGFILE AUTOSSH_LOCKFILE AUTOSSH_PIDFILE AUTOSSH_LOGLEVEL AUTOSSH_POLL AUTOSSH_GATETIME AUTOSSH_DEBUG
+
+    VERBOSE=false
 }
 
 check_permissions(){
+    AUTOSSH_FILES="$AUTOSSH_LOGFILE" # "$AUTOSSH_LOCKFILE $AUTOSSH_PIDFILE"
     for var in $AUTOSSH_FILES ; do
-	if  [ -w "$var" ] || [ -e "$var" ]; then
-	    is_ok $var
+	if  [ -w "$var" ] || [ ! -e "$var" ]; then
+	    $VERBOSE && is_ok $var
 	else
-	    echo Remove $var file
+	    echo "Remove $var file"
 	    #sudo rm -f $var
 	fi
     done
@@ -36,7 +38,7 @@ check_permissions(){
 }
 
 is_ok(){
-    echo "File $1 permission is ok"
+    $VERBOSE && echo "File $1 permission is ok"
 }
 
 run_autossh(){
@@ -45,8 +47,8 @@ run_autossh(){
 
 #Fix for import init function
 if [ -n "$1" ] ; then
-    check_permissions $1
     init_autossh $1
+    check_permissions
     shift
     run_autossh $@
 fi

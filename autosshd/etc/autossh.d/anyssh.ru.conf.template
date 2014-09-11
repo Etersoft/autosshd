@@ -1,28 +1,23 @@
 # Config for autossh pretuned for anyssh.ru service
-# see man autossh
-# http://wiki.etersoft.ru/Autosshd
-# http://blog.sozinov.eu/2009/08/autossh.html
+# Manual: http://wiki.etersoft.ru/Autosshd
 
-AUTOSSH_LOGLEVEL=4
-AUTOSSH_POLL=120
-AUTOSSH_GATETIME=0
-AUTOSSH_DEBUG=no
+#For connect to anyssh.ru you need type only user number
+REMOTESSH_USER_NUMBER=XXX
 
-# connection params
-HOST=anyssh.ru
-REMOTESSH_USER=aNNNN
+# Connection params
+#1 Set you remote host addres or ip
+HOST=anyssh.eterhost.ru
+#2 Create user 
+REMOTESSH_USER=a$REMOTESSH_USER_NUMBER
+#3 Copy user private id_dsa from $HOST tohome anyssh/.ssh dir and check acess rights 600
+REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa.anyssh.ru.$REMOTESSH_USER
 
-# port redirect
-LOCAL_PORT=10022
-REMOTE_PORT=NNNN
+# Change port if need
+LOCAL_PORT=22 				#port that linstening sshd
+REMOTE_PORT=10$REMOTESSH_USER_NUMBER 	#port for ssh comand on HOST $ ssh -p $REMOTE_PORT $REMOTESSH_USER@127.0.0.1
+AUTOSSH_PORT=11$REMOTESSH_USER_NUMBER 	#monitoring local port (port+1 will used too, see man autossh)
 
-REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa
+AUTOSTART=true
 
-# monitoring local port (port+1 will used too, see man autossh)
-AUTOSSH_PORT=11185
-
-MANUAL=no
-
-SSH_OPTIONS="-i ${REMOTE_KEY} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${REMOTESSH_USER}@${HOST}"
-
-AUTOSSH_OPTIONS="-N -M ${AUTOSSH_PORT} -f ${SSH_OPTIONS}"
+SSH_OPTIONS="-N -i ${REMOTE_KEY} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${REMOTESSH_USER}@${HOST} -o StrictHostKeychecking=no"
+AUTOSSH_OPTIONS="-M ${AUTOSSH_PORT} -f ${SSH_OPTIONS}"

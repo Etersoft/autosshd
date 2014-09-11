@@ -39,7 +39,7 @@ CHANNEL - optional name of AutoSSH channel (with corresponding
 
 Usefull actions is:
 start       - start all configured channels except listed 
-              in MANUAL variable in $CONFIGDIR/CHANNEL.conf file
+              in AUTOSTART variable in $CONFIGDIR/CHANNEL.conf file
 stop        - stop all running channels
 restart     - restart channels that are configured for autostart 
 reload      - restart only running channels
@@ -58,8 +58,8 @@ do_run_one()
     if [ -f $1 ]; then
 	SourceIfNotEmpty $1
 
-	# skip if in manual mode
-	is_no $MANUAL || return 0
+	# skip if in AUTOSTART mode
+	$AUTOSTART || return 0
 
         start_daemon --lockfile "$AUTOSSH_LOCKFILE" \
         --user $AUTOSSHUSER --displayname "autossh to ${HOST}" -- $startname $1 "${AUTOSSH_OPTIONS}"
@@ -157,7 +157,7 @@ list_channels()
     echo "Configured channels:"
         for config in $LIST; do
 	    SourceIfNotEmpty $config
-	    echo "   `basename $config .conf`. Manual: ${MANUAL} "
+	    echo "   `basename $config .conf`. AUTOSTART: ${AUTOSTART} "
         done
     return 0
 }
@@ -210,10 +210,10 @@ case "$OP" in
             help
             ;;
         testssh)
-            autosshd-ssh
+	    su - -c "autosshd-ssh $1" _autossh
             ;;
         *)
-                msg_usage "${0##*/} {start|stop|reload|restart|status|list|help}"
+                msg_usage "${0##*/} {start|stop|reload|restart|status|list|help|testssh}"
                 RETVAL=1
 esac
 
