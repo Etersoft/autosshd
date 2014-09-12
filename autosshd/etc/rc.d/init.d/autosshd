@@ -210,7 +210,7 @@ case "$OP" in
             help
             ;;
         testssh)
-	    su - -c "autosshd-ssh $1" _autossh
+	    su - -s /bin/bash -c "autosshd-ssh $1" _autossh
             ;;
         *)
                 msg_usage "${0##*/} {start|stop|reload|condrestart|condstop|restart|status|list|help|testssh}"
