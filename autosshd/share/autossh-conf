@@ -29,7 +29,7 @@ check_permissions(){
     done
     
     for i in ~/.ssh/id_dsa* ; do
-	if [ $(stat -c "%a" $i)=="600" ]; then
+	if [ "$(stat -c "%a" $i)" == "600" ]; then
 	    is_ok $i
 	else
 	    echo "Permissions $(stat -c "%a" $i) for $i are too open."

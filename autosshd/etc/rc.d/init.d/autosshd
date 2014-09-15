@@ -148,7 +148,7 @@ stop()
 
 get_channels_list()
 {
-    /bin/ls $CONFIGDIR/*.conf 2>/dev/null
+    /bin/ls $CONFIGDIR/*.conf 2>/dev/null #returns only filenames
 }
 
 list_channels()
