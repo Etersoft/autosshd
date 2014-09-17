@@ -21,14 +21,21 @@ check_permissions(){
     AUTOSSH_FILES="$AUTOSSH_LOGFILE" # "$AUTOSSH_LOCKFILE $AUTOSSH_PIDFILE"
     for var in $AUTOSSH_FILES ; do
 	if  [ -w "$var" ] || [ ! -e "$var" ]; then
-	    $VERBOSE && is_ok $var
+	    is_ok $var
 	else
 	    echo "Remove $var file"
 	    #sudo rm -f $var
 	fi
     done
+
+    DSAFILES="~/.ssh/id_dsa*"
+    if ls $DSAFILES ; then
+	is_ok $DSAFILES
+    else
+	echo "No dsa files in $(realpath $DSAFILES)"
+    fi
     
-    for i in ~/.ssh/id_dsa* ; do
+    for i in $DSAFILES ; do
 	if [ "$(stat -c "%a" $i)" == "600" ]; then
 	    is_ok $i
 	else
