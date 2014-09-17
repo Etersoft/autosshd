@@ -91,7 +91,7 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 
 %changelog
 * Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt4
-- 
+- added cheking for existing config
 
 * Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt3
 - move files in right directory
