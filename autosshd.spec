@@ -5,7 +5,7 @@
 
 Name: autosshd
 Version: 0.0.3
-Release: alt2
+Release: alt4
 
 Summary: System administration - AutoSSH system level service
 
@@ -13,7 +13,7 @@ Group: System/Servers
 License: GPL
 Url: http://wiki.etersoft.ru/Autosshd
 
-Packager: Vitaly Lipatov <lav@altlinux.ru>
+Packager: Danil Mikhailov <danil@altlinux.org>
 
 #Source-git: https://github.com/vitlav/autosshd
 Source: %name-%version.tar
@@ -90,6 +90,13 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 %_bindir/autosshd-ssh
 
 %changelog
+* Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt4
+- added cheking for existing config
+
+* Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt3
+- move files in right directory
+- fix start when already running
+
 * Thu Sep 11 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt2
 - rewrite doc
 - rewrite init script

@@ -122,14 +122,15 @@ start()
     # run only listed channels
     if [ -n "$CHANNELS" ] ; then
         for i in $CHANNELS; do
-            do_run_one $CONFIGDIR/$i.conf
             init_autossh $config
+            do_run_one $CONFIGDIR/$i.conf
         done
         return 0
     fi
 
     # run all scheduled channels
     CHANNELS=$(get_channels_list)
+    [ -z "$CHANNELS" ] && echo "Nothing to run. Put config in $CONFIGDIR/" && return 1
     for config in $CHANNELS; do
         init_autossh $config
         do_run_one $config
@@ -153,6 +154,7 @@ get_channels_list()
 {
     /bin/ls $CONFIGDIR/*.conf 2>/dev/null #returns only filenames
 }
+
 
 list_channels()
 {
@@ -200,7 +202,9 @@ case "$OP" in
 	condrestart)
 	    running_channels
 	    if [ -n $CHANNELS ] ; then
-		restart
+                stop
+                sleep 2
+                start
 	    fi
 	    ;;
         status)
