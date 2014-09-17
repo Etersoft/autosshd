@@ -5,7 +5,7 @@
 
 Name: autosshd
 Version: 0.0.3
-Release: alt3
+Release: alt4
 
 Summary: System administration - AutoSSH system level service
 
@@ -90,6 +90,9 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 %_bindir/autosshd-ssh
 
 %changelog
+* Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt4
+- 
+
 * Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt3
 - move files in right directory
 - fix start when already running
