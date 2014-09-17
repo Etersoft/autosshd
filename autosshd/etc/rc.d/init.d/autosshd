@@ -8,7 +8,7 @@
 #
 
 processname="autossh"
-startname="/usr/share/autosshd/autossh-conf" #need for export var, because start shell by one user and run autossh by another
+startname="/usr/share/autosshd/autossh-conf" #need for export var, because start shell by root and run autossh by _autossh user
 # processname: $processname
 #
 
@@ -24,6 +24,7 @@ SourceIfNotEmpty /etc/sysconfig/network
 # AutoSSHDaemon configuration
 SYSCONFIGFILE="/etc/sysconfig/autosshd"
 SourceIfNotEmpty $SYSCONFIGFILE
+# Load AutoSSHD variables and init_autossh function
 SourceIfNotEmpty "$startname"
 
 
@@ -190,16 +191,17 @@ case "$OP" in
         stop|condstop)
             stop
             ;;
-        reload|condrestart)
+        reload|restart)
             stop
             sleep 2
             start
             ;;
-        restart)
-            stop
-            sleep 2
-            start
-            ;;
+	condrestart)
+	    LOCKFILE=${LOCKFILEDIR}/*.lck
+	    if ls "$LOCKFILE" &> /dev/null ; then
+		restart
+	    fi
+	    ;;
         status)
             show_status
             ;;

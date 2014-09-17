@@ -29,7 +29,7 @@ check_permissions(){
     done
 
     DSAFILES="~/.ssh/id_dsa*"
-    if ls $DSAFILES ; then
+    if ls $DSAFILES &> /dev/null ; then
 	is_ok $DSAFILES
     else
 	echo "No dsa files in $(realpath $DSAFILES)"
