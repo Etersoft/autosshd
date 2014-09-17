@@ -61,7 +61,9 @@ do_run_one()
 
 	# skip if in AUTOSTART mode
 	is_yes "$AUTOSTART" || return 0
-
+	
+	[ -e "$AUTOSSH_LOCKFILE" ] && echo "autossh to $(basename $1 .conf) service is already running." && return 1
+	
         start_daemon --lockfile "$AUTOSSH_LOCKFILE" \
             --user $AUTOSSHUSER --displayname "autossh to ${HOST}" -- $startname $1 "${AUTOSSH_OPTIONS}"
         RETVAL=$?
@@ -173,7 +175,6 @@ running_channels()
     return 0
 }
 
-
 ###====== Main =====
 RETVAL=0
 
@@ -197,8 +198,8 @@ case "$OP" in
             start
             ;;
 	condrestart)
-	    LOCKFILE=${LOCKFILEDIR}/*.lck
-	    if ls "$LOCKFILE" &> /dev/null ; then
+	    running_channels
+	    if [ -n $CHANNELS ] ; then
 		restart
 	    fi
 	    ;;
@@ -212,7 +213,7 @@ case "$OP" in
             help
             ;;
         testssh)
-	    su - -s /bin/bash -c "autosshd-ssh $1" _autossh
+	    su - -s /bin/sh -c "autosshd-ssh $1" _autossh
             ;;
         *)
                 msg_usage "${0##*/} {start|stop|reload|condrestart|condstop|restart|status|list|help|testssh}"
