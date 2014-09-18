@@ -91,7 +91,7 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 
 %changelog
 * Thu Sep 18 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt5
-- 
+- Correct manual in config files
 
 * Wed Sep 17 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt4
 - added cheking for existing config
