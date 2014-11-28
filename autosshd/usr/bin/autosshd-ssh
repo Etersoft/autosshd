@@ -12,7 +12,7 @@ ${0##*/} anyssh.ru # if exist config /etc/autossh.d/anyssh.ru.conf"
 if [ -n "$1" ] ; then
     . /etc/sysconfig/autosshd
     . /etc/autossh.d/"$1".conf
-    su - -s /bin/sh -c "ssh ${SSH_OPTIONS}" $AUTOSSHUSER
+    su - -s /bin/sh -c "ssh ${SSH_OPTIONS}" _autossh
 else
     help
 fi

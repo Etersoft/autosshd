@@ -92,6 +92,7 @@ cp lib/systemd/system/autosshd.service %buildroot/lib/systemd/system/autosshd.se
 /lib/systemd/system/autosshd.service 
 
 %changelog
+<<<<<<< HEAD
 * Tue Oct 06 2015 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt10
 - added initial autosshd-auth for automatic authorisation on anyssh.ru
 - added cheking for existing config
@@ -130,6 +131,11 @@ cp lib/systemd/system/autosshd.service %buildroot/lib/systemd/system/autosshd.se
 * Wed Dec 17 2014 Vitaly Lipatov <lav@altlinux.ru> 0.0.3-alt7
 - small fixes
 
+=======
+* Mon Dec 29 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt9
+- fixed test sudo autosshd-ssh anyssh.ru
+
+>>>>>>> # This is a combination of 4 commits.
 * Thu Nov 27 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt6
 - Cleanup git log
 
