@@ -217,7 +217,7 @@ case "$OP" in
             help
             ;;
         testssh)
-	    su - -s /bin/sh -c "autosshd-ssh $1" _autossh
+	    autosshd-ssh $1
             ;;
         *)
                 msg_usage "${0##*/} {start|stop|reload|condrestart|condstop|restart|status|list|help|testssh}"
