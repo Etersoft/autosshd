@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#1) Создание нового пользователя на anyssh.ru
+ssh default@anyssh.ru /root/create.sh #должен вывести имя $юзера
+#2) Создание локального пользователя (возможно не нужно)
+useradd $юзера
+#3) Копирование настроек
+scp defautl@anyssh.ru:/home/aXXX/anyssh.ru.conf /etc/autossh.d/anyssh.ru.conf
+scp defautl@anyssh.ru:/home/aXXX/.ssh/key /home/aXXX/.ssh/key 
+#4) Запуск
+serv autossd on
+serv autossd start

@@ -5,7 +5,7 @@
 
 Name: autosshd
 Version: 0.0.3
-Release: alt5
+Release: alt6
 
 Summary: System administration - AutoSSH system level service
 
@@ -90,6 +90,9 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 %_bindir/autosshd-ssh
 
 %changelog
+* Thu Nov 27 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt6
+- Cleanup git log
+
 * Thu Sep 18 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt5
 - Correct manual in config files
 
