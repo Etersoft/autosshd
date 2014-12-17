@@ -2,7 +2,8 @@
 
 help(){
     echo \
-"Usage: ${0##*/} SERVER
+"Connect with ssh parameters from config file.
+Usage: ${0##*/} SERVER
 SERVER  - name of anysshd conf file
 Example:
 ${0##*/} anyssh.ru # if exist config /etc/autossh.d/anyssh.ru.conf"

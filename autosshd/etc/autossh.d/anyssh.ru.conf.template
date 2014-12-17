@@ -1,14 +1,18 @@
 # Config for autossh pretuned for anyssh.ru service
 # Manual: http://wiki.etersoft.ru/Autosshd
 
-#For connect to anyssh.ru you need type user number and copy key #3
+# For connect to anyssh.ru you need type user number and copy key #3
 REMOTESSH_USER_NUMBER=XXX
 
-#The main connection parameters:
+# The main connection parameters:
 #1. Set remote host address or corresponding ip:
-HOST=anyssh.eterhost.ru
+HOST=anyssh.ru
+
+# Note: It is not needed usually to change follow lines
+
 #2. Create user or use an existing one on the remote host and write down the login here:
 REMOTESSH_USER=a$REMOTESSH_USER_NUMBER
+
 #3. Copy user private key file (id_dsa) from $HOST to /var/lib/autosshd/.ssh directory and check unix permissions: it must be 0600
 REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa.anyssh.ru.$REMOTESSH_USER
 
