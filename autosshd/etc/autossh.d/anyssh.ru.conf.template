@@ -14,7 +14,7 @@ HOST=anyssh.ru
 REMOTESSH_USER=a$REMOTESSH_USER_NUMBER
 
 #3. Copy user private key file (id_dsa) from $HOST to /var/lib/autosshd/.ssh directory and check unix permissions: it must be 0600
-REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa.anyssh.ru.$REMOTESSH_USER
+REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa.$HOST.$REMOTESSH_USER
 
 #4. Correct remote ports if necessary:
 LOCAL_PORT=22 				#port that linstening sshd
