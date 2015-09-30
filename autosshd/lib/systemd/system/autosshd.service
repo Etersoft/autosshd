@@ -1,0 +1,7 @@
+[Unit]
+Description=AutoSSH system level service
+
+[Service]
+Type=simple
+ExecStart=/etc/init.d/autosshd start
+ExecStop=/etc/init.d/autosshd stop
