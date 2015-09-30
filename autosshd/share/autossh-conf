@@ -11,7 +11,7 @@ init_autossh(){
     SourceIfNotEmpty $SYSCONFIGFILE
     AUTOSSH_PIDFILE=${PIDFILEDIR}/$(basename $1 .conf).pid
     AUTOSSH_LOCKFILE=${LOCKFILEDIR}/$(basename $1 .conf).lck
-    AUTOSSH_LOGFILE=/var/lib/autosshd/$(basename $1 .conf).log
+    [ -z "$AUTOSSH_LOGFILE" ] && AUTOSSH_LOGFILE=/var/lib/autosshd/$(basename $1 .conf).log
     export AUTOSSH_LOGFILE AUTOSSH_LOCKFILE AUTOSSH_PIDFILE AUTOSSH_LOGLEVEL AUTOSSH_POLL AUTOSSH_GATETIME AUTOSSH_DEBUG
 
     VERBOSE=false
