@@ -56,9 +56,11 @@ install -m644 etc/autossh.d/*.conf.template %buildroot%_sysconfdir/autossh.d/
 
 mkdir -p %buildroot%_datadir/%name/
 mkdir -p %buildroot%_bindir/
+mkdir -p %buildroot/lib/systemd/system/
 cp usr/bin/autosshd-ssh %buildroot%_bindir/
 cp share/autossh-conf %buildroot%_datadir/%name/
 cp share/autosshd.setup* %buildroot%_datadir/%name/
+cp lib/systemd/system/autosshd.service %buildroot/lib/systemd/system/autosshd.service 
 
 %pre
 # Add the "_autossh" user
@@ -87,6 +89,7 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 %_datadir/%name/autosshd.setup
 %_datadir/%name/autosshd.setup.user
 %_bindir/autosshd-ssh
+/lib/systemd/system/autosshd.service 
 
 %changelog
 * Wed Sep 30 2015 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt9
