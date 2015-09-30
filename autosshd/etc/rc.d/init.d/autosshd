@@ -2,7 +2,7 @@
 #
 # autosshd      autossh system service
 #
-# chkconfig: 2345 30 60
+# chkconfig: 2345 60 60
 #
 # description: autosshd run autossh as system service
 #
