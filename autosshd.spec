@@ -5,7 +5,7 @@
 
 Name: autosshd
 Version: 0.0.3
-Release: alt8
+Release: alt9
 
 Summary: System administration - AutoSSH system level service
 
@@ -89,6 +89,11 @@ cp share/autosshd.setup* %buildroot%_datadir/%name/
 %_bindir/autosshd-ssh
 
 %changelog
+* Wed Sep 30 2015 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt9
+- Added initial realisation of systemd init service
+- Change runlevel to 60
+- Added 400 permission as allowed 
+
 * Mon Dec 29 2014 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt8
 - fixed test sudo autosshd-ssh anyssh.ru
 
