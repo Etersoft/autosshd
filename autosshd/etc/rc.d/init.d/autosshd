@@ -8,7 +8,8 @@
 #
 
 processname="autossh"
-startname="/usr/share/autosshd/autossh-conf" #need for export var, because start shell by root and run autossh by _autossh user
+servicename="${processname}d"
+startname="/usr/share/$servicename/autossh-conf" #need for export var, because start shell by root and run autossh by _autossh user
 # processname: $processname
 #
 
@@ -22,10 +23,12 @@ WITHOUT_RC_COMPAT=1
 SourceIfNotEmpty /etc/sysconfig/network
 
 # AutoSSHDaemon configuration
-SYSCONFIGFILE="/etc/sysconfig/autosshd"
+SYSCONFIGFILE="/etc/sysconfig/$servicename"
 SourceIfNotEmpty $SYSCONFIGFILE
 # Load AutoSSHD variables and init_autossh function
 SourceIfNotEmpty "$startname"
+
+MAINLOCKFILE=$LOCKFILEDIR/../"${servicename}"
 
 
 ###========= Functions =========
@@ -119,6 +122,8 @@ show_status()
 
 start()
 {
+    [ -z "$MAINLOCKFILE" ] || touch "$MAINLOCKFILE"
+    
     # run only listed channels
     if [ -n "$CHANNELS" ] ; then
         for i in $CHANNELS; do
@@ -140,6 +145,8 @@ start()
 
 stop()
 {
+    [ -z "$MAINLOCKFILE" ] || rm -f "$MAINLOCKFILE"
+
     [ -n "$CHANNELS" ] || running_channels
 
     for config in $CHANNELS; do

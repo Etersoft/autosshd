@@ -9,7 +9,7 @@ CONFIGDIR=/etc/autossh.d
 PIDFILEDIR=/var/run/autosshd
 
 # Directory for store connection's lock-files
-LOCKFILEDIR=/var/lock/subsys/autosshd
+LOCKFILEDIR=/var/lock/subsys/autossh.d
 
 # User for run autossh
 AUTOSSHUSER=_autossh
