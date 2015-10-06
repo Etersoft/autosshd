@@ -35,7 +35,7 @@ Run autossh as system service at startup.
 mkdir -p %buildroot%_sysconfdir/autossh.d/
 
 mkdir -p %buildroot%_runtimedir/%name/
-mkdir -p %buildroot%_locksubsysdir/%name/
+mkdir -p %buildroot%_locksubsysdir/autossh.d/
 mkdir -p %buildroot/%_tmpfilesdir/
 
 cat <<EOF >%buildroot/%_tmpfilesdir/%name.conf
