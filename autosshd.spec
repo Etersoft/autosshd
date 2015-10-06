@@ -40,7 +40,7 @@ mkdir -p %buildroot/%_tmpfilesdir/
 
 cat <<EOF >%buildroot/%_tmpfilesdir/%name.conf
 d %_runtimedir/%name 0755 %autossh_user %autossh_group
-d %_locksubsysdir/%name 0755 root root
+d %_locksubsysdir/autossh.d/ 0755 root root
 EOF
 
 mkdir -p %buildroot/%autossh_dir/.ssh/
@@ -83,7 +83,7 @@ cp lib/systemd/system/autosshd.service %buildroot/lib/systemd/system/autosshd.se
 %_initdir/%name
 %_tmpfilesdir/%name.conf
 %attr(750,%autossh_user,%autossh_group) %dir %_runtimedir/%name/
-%dir %_locksubsysdir/%name/
+%dir %_locksubsysdir/autossh.d/
 %dir %_datadir/%name/
 %_datadir/%name/autossh-conf
 %_datadir/%name/autosshd.setup
