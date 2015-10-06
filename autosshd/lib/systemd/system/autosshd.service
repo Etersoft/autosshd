@@ -5,3 +5,6 @@ Description=AutoSSH system level service
 Type=simple
 ExecStart=/etc/init.d/autosshd start
 ExecStop=/etc/init.d/autosshd stop
+
+[Install]
+WantedBy=multi-user.target
