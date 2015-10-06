@@ -28,7 +28,7 @@ check_permissions(){
 	fi
     done
 
-    DSAFILES="~/.ssh/id_dsa*"
+    DSAFILES="/$HOME/.ssh/id_dsa*"
     if ls $DSAFILES &> /dev/null ; then
 	is_ok $DSAFILES
     else
@@ -36,11 +36,11 @@ check_permissions(){
     fi
     
     for i in $DSAFILES ; do
-	file_premission="$(stat -c "%a" $i)"
-	if [ "$file_premission" == "600" ] || [ "$file_premission" == "400"  ]; then
+	file_permission="$(stat -c "%a" $i)"
+	if [ "$file_permission" == "600" ] || [ "$file_permission" == "400"  ]; then
 	    is_ok $i
 	else
-	    echo "Permissions $(stat -c "%a" $i) for $i are too open."
+	    echo "Permissions $file_permission for $i are too open."
 	fi
     done
 }
