@@ -5,7 +5,7 @@
 
 Name: autosshd
 Version: 0.0.3
-Release: alt10
+Release: alt11
 
 Summary: System administration - AutoSSH system level service
 
@@ -92,31 +92,14 @@ cp lib/systemd/system/autosshd.service %buildroot/lib/systemd/system/autosshd.se
 /lib/systemd/system/autosshd.service 
 
 %changelog
+* Mon Oct 12 2015 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt11
+- Fix inheritance error
+
 * Tue Oct 06 2015 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt10
-- added initial autosshd-auth for automatic authorisation on anyssh.ru
-- added cheking for existing config
-- added changelog
-- merge branch 'master' of git.eter:/people/danil/packages/autosshd
-- small fix
-- new build 0.0.3-alt4 (with rpmlog script)
-- added changelog
-- correct manual in config files
-- new build 0.0.3-alt5 (with rpmlog script)
-- added changelog
-- merge remote-tracking branch 'gear/sisyphus'
-- 0.0.3-alt7
-- added initial autosshd-auth for automatic authorisation on anyssh.ru fixed ssh test alt8
-- added 400 permission as allowed
-- change runlevel to 60
-- added initial realisation of systemd init service
-- new build 0.0.3-alt9 (with rpmlog script)
-- added systemd service to spec
-- aUTOSSH_LOGFILE sets only if was empty
 - fixed bug with not stop properly by adding mainlockfile
 - fixed /var/lock/subsys/autossh.d/ dir name
 - change home dir var, fix var name permission
 - fixed /var/lock/subsys/autossh.d/ dir name in spec
-- fixed systemd service
 - change systemd service type to forking [work]
 
 * Wed Sep 30 2015 Danil Mikhailov <danil@altlinux.org> 0.0.3-alt9
