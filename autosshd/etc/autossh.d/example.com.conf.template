@@ -3,18 +3,18 @@
 
 #The main connection parameters:
 #1. Set remote host address or corresponding ip:
-HOST=example.com
-#2. Create user or use an existing one on the remote host and write down the login here:
-REMOTESSH_USER=_autossh
-#3. Copy user private key file (id_dsa) from $HOST to /var/lib/autosshd/.ssh directory and check unix permissions: it must be 0600
-REMOTE_KEY=/var/lib/autosshd/.ssh/id_dsa.$HOST.$REMOTESSH_USER
+SSHHOST=user@example.com
+#REMOTE_KEY=~/.ssh/id_rsa.pub
 
 #4. Correct remote ports if necessary:
-LOCAL_PORT=22 		 the port is listen by sshd
-REMOTE_PORT=10210 	 the port for ssh command on $HOST $ ssh -p $REMOTE_PORT $REMOTESSH_USER@127.0.0.1
-AUTOSSH_PORT=11210 	 the local port for monitoring purposes (port+1 will used too, see man autossh)
+LOCAL_PORT=22 		 # the port is listen by sshd
+REMOTE_PORT=10210 	 # the port for ssh command on $HOST $ ssh -p $REMOTE_PORT $REMOTESSH_USER@127.0.0.1
+AUTOSSH_PORT=11210 	 # the local port for monitoring purposes (port+1 will used too, see man autossh)
 
 AUTOSTART=yes
 
-SSH_OPTIONS="-N -i ${REMOTE_KEY} -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${REMOTESSH_USER}@${HOST} -o StrictHostKeychecking=no"
+REMOTE_KEY_OPT=
+[ -n "$REMOTE_KEY" ] && REMOTE_KEY_OPT="-i ${REMOTE_KEY}"
+
+SSH_OPTIONS="-N $REMOTE_KEY_OPT -R ${REMOTE_PORT}:localhost:${LOCAL_PORT} ${SSHHOST} -o StrictHostKeychecking=no ${SSH_OPTIONS}"
 AUTOSSH_OPTIONS="-M ${AUTOSSH_PORT} -f ${SSH_OPTIONS}"
