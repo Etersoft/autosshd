@@ -1,6 +1,0 @@
-# Config for autossh pretuned for anyssh.ru service
-# Manual: http://wiki.etersoft.ru/Autosshd
-#
-# 1) Create config as /etc/autossh.d/example.com.conf.template
-# 2) Run service 
-# service autosshd start
